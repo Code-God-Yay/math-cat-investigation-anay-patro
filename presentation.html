@@ -1,0 +1,1032 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bark: #3d2b1f;
+    --leaf-dark: #2d5a1b;
+    --leaf-mid: #4a8a2a;
+    --leaf-light: #7ec850;
+    --sky: #e8f4f0;
+    --gold: #c8902a;
+    --cream: #faf8f2;
+    --text-main: #1a1a18;
+    --text-sub: #4a4a42;
+    --accent: #d4621a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, #app {
+    font-family: 'Outfit', sans-serif;
+    background: var(--cream);
+    color: var(--text-main);
+    min-height: 100vh;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 0.5px solid #ccc8b8;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-sub);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .slide-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+
+  .nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    padding: 0;
+  }
+  .nav-dot.active { background: var(--leaf-dark); transform: scale(1.4); }
+  .nav-dot:hover { background: var(--leaf-mid); }
+
+  .nav-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .nav-btn {
+    background: none;
+    border: 0.5px solid #ccc;
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: #f0ede0; border-color: #bbb; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .slides-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    display: none;
+    min-height: calc(100vh - 56px);
+    animation: fadeSlide 0.35s ease;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SLIDE 1 - Hero */
+  .hero {
+    background: linear-gradient(160deg, #1a2e14 0%, #2d5a1b 50%, #3d7a24 100%);
+    color: #fff;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-tree {
+    position: absolute;
+    right: -20px;
+    bottom: 0;
+    opacity: 0.18;
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 2;
+    padding: 40px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7ec850;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .hero-title em {
+    color: #7ec850;
+    font-style: italic;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 0.5px solid rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .hero-dot { width: 8px; height: 8px; border-radius: 50%; background: #7ec850; }
+
+  /* SLIDE 2 - Intro to Recursion */
+  .content-slide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide-header {
+    padding: 40px 48px 24px;
+    border-bottom: 0.5px solid #e0ddd0;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .slide-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 64px;
+    color: #e0ddd0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .slide-heading-group {}
+  .slide-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--leaf-mid);
+    margin-bottom: 4px;
+  }
+  .slide-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-main);
+    line-height: 1.2;
+  }
+
+  .slide-body {
+    flex: 1;
+    padding: 32px 48px;
+    display: flex;
+    gap: 32px;
+  }
+
+  .col { flex: 1; }
+  .col-narrow { flex: 0 0 280px; }
+
+  .point-card {
+    background: #fff;
+    border: 0.5px solid #e0ddd0;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+
+  .point-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--leaf-mid);
+    margin-bottom: 6px;
+  }
+
+  .point-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-sub);
+  }
+
+  .point-card strong {
+    color: var(--text-main);
+    font-weight: 500;
+  }
+
+  .code-block {
+    background: #1a1e16;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #c8e6b0;
+    margin-bottom: 12px;
+    overflow-x: auto;
+  }
+
+  .code-kw { color: #f5c842; }
+  .code-fn { color: #7ec850; }
+  .code-cm { color: #6a7a62; }
+  .code-str { color: #ffa058; }
+  .code-num { color: #88c0ff; }
+
+  .math-formula {
+    background: var(--sky);
+    border-left: 3px solid var(--leaf-mid);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--leaf-dark);
+    margin-bottom: 12px;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    background: var(--sky);
+    border: 0.5px solid #b8d4c8;
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--leaf-dark);
+    font-weight: 400;
+  }
+
+  .tag.bark { background: #f5ede8; border-color: #d8b8a0; color: var(--bark); }
+  .tag.gold { background: #fdf4e0; border-color: #e0c878; color: #7a5a0a; }
+
+  /* Tree SVG panel */
+  .tree-panel {
+    background: #f0f7ee;
+    border: 0.5px solid #c8dfc0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 200px;
+  }
+
+  /* Slide 5 - Tasks visual */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .level-cell {
+    background: #fff;
+    border: 0.5px solid #e0ddd0;
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .level-cell .lvl-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--leaf-mid);
+    margin-bottom: 4px;
+  }
+
+  /* Slide - Conclusion */
+  .conclusion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .concl-card {
+    background: #fff;
+    border: 0.5px solid #e0ddd0;
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .concl-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    margin-bottom: 8px;
+    color: var(--text-main);
+  }
+
+  .concl-card p {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-sub);
+  }
+
+  .concl-card.featured {
+    border-color: var(--leaf-mid);
+    background: #f0f7ee;
+    grid-column: span 2;
+  }
+
+  .concl-card.featured h3 { color: var(--leaf-dark); }
+
+  .timeline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-top: 20px;
+  }
+  .tl-item {
+    flex: 1;
+    position: relative;
+    padding: 0 8px;
+    text-align: center;
+  }
+  .tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--leaf-mid);
+    margin: 0 auto 8px;
+    position: relative;
+    z-index: 2;
+  }
+  .tl-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: calc(50% + 10px);
+    right: calc(-50% + 10px);
+    height: 0.5px;
+    background: #c8dfc0;
+  }
+  .tl-label { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
+  .tl-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--leaf-mid); }
+
+  .feature-list { list-style: none; padding: 0; }
+  .feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid #f0ede0;
+    font-size: 14px;
+    color: var(--text-sub);
+    line-height: 1.5;
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--sky);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--leaf-dark);
+    margin-top: 1px;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--sky);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--leaf-dark);
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-top: 2px;
+  }
+</style>
+
+<div id="app">
+  <nav class="nav">
+    <span class="nav-title">Year 8 Maths — CAT Investigation 1</span>
+    <div class="nav-dots" id="dots"></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="slide-counter" id="counter">1 / 10</span>
+      <div class="nav-btns">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Prev</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="slides-wrapper">
+
+    <!-- SLIDE 1: HERO -->
+    <div class="slide active" id="slide-1">
+      <div class="hero">
+        <svg class="hero-tree" width="360" height="480" viewBox="0 0 360 480">
+          <g opacity="1">
+            <!-- Fractal tree art, purely decorative -->
+            <line x1="180" y1="480" x2="180" y2="340" stroke="#7ec850" stroke-width="8"/>
+            <line x1="180" y1="340" x2="120" y2="240" stroke="#7ec850" stroke-width="5.5"/>
+            <line x1="180" y1="340" x2="240" y2="240" stroke="#7ec850" stroke-width="5.5"/>
+            <line x1="120" y1="240" x2="76" y2="168" stroke="#7ec850" stroke-width="4"/>
+            <line x1="120" y1="240" x2="156" y2="168" stroke="#7ec850" stroke-width="4"/>
+            <line x1="240" y1="240" x2="204" y2="168" stroke="#7ec850" stroke-width="4"/>
+            <line x1="240" y1="240" x2="284" y2="168" stroke="#7ec850" stroke-width="4"/>
+            <line x1="76" y1="168" x2="52" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="76" y1="168" x2="94" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="156" y1="168" x2="136" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="156" y1="168" x2="170" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="204" y1="168" x2="190" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="204" y1="168" x2="220" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="284" y1="168" x2="266" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <line x1="284" y1="168" x2="308" y2="116" stroke="#7ec850" stroke-width="2.5"/>
+            <!-- Level 5 twigs -->
+            <line x1="52" y1="116" x2="40" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="52" y1="116" x2="60" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="94" y1="116" x2="82" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="94" y1="116" x2="102" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="136" y1="116" x2="124" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="136" y1="116" x2="144" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="170" y1="116" x2="158" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="170" y1="116" x2="178" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="190" y1="116" x2="178" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="190" y1="116" x2="198" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="220" y1="116" x2="210" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="220" y1="116" x2="228" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="266" y1="116" x2="254" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="266" y1="116" x2="274" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="308" y1="116" x2="296" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+            <line x1="308" y1="116" x2="320" y2="84" stroke="#7ec850" stroke-width="1.5"/>
+          </g>
+        </svg>
+        <div class="hero-content">
+          <div class="hero-eyebrow">Year 8 Mathematics — CAT Investigation 1</div>
+          <div class="hero-title">Recursion &<br><em>Fractal Trees</em></div>
+          <div class="hero-subtitle">Modeling nature through code — by Anay Patro</div>
+          <div class="hero-badge">
+            <div class="hero-dot"></div>
+            Python · Turtle Graphics · Git
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Intro to Recursion -->
+    <div class="slide" id="slide-2">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">02</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Concept</div>
+            <div class="slide-heading">Introduction to recursion</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card">
+              <div class="point-card-label">What is recursion?</div>
+              <p>A function that <strong>calls itself</strong> to solve a smaller version of the same problem. It breaks big problems into identical smaller steps, each one simpler than the last.</p>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Why use it for fractals?</div>
+              <p>Fractals are shapes that look the same at every scale — the perfect match for recursion. A Level 5 tree contains two Level 4 trees, which each contain two Level 3 trees, and so on. One function, any depth.</p>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Real-world link</div>
+              <p>Trees, snowflakes, coastlines, ferns, river deltas, and even <strong>DNA replication</strong> all follow recursive, self-similar patterns found in nature.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">The simplest recursive function</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">printdots</span>(n):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        print(<span class="code-str">"."</span>)
+        <span class="code-fn">printdots</span>(n - <span class="code-num">1</span>)  <span class="code-cm"># calls itself!</span>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Two rules every recursive function needs</div>
+              <p><strong>Base case:</strong> the condition that stops the recursion (e.g. <code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">if n &gt; 0</code>) — without it, the function crashes.<br><br><strong>Recursive case:</strong> the call to itself with a simpler input (<code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">n - 1</code>).</p>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Self-similar</span>
+              <span class="tag">Base case</span>
+              <span class="tag">Recursive case</span>
+              <span class="tag bark">Fractal structure</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Tasks 4 & 5 -->
+    <div class="slide" id="slide-3">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">03</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Tasks 4 & 5</div>
+            <div class="slide-heading">The math logic — stars & triangular numbers</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Task 4 — star triangle</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">startriangle</span>(n):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        print(<span class="code-str">"*"</span> * n)
+        <span class="code-fn">startriangle</span>(n - <span class="code-num">1</span>)
+
+<span class="code-cm"># startriangle(5) outputs:</span>
+<span class="code-cm"># *****</span>
+<span class="code-cm"># ****</span>
+<span class="code-cm"># ***</span>
+<span class="code-cm"># **</span>
+<span class="code-cm"># *</span>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Key insight</div>
+              <p>Each call prints <strong>n stars</strong> then calls itself with <strong>n−1</strong>. The base case (<code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">n = 0</code>) stops the chain. User input was added so anyone can test any number.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Task 5 — triangular number</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">triangular</span>(n):
+    <span class="code-kw">if</span> n &lt;= <span class="code-num">0</span>:
+        <span class="code-kw">return</span> <span class="code-num">0</span>
+    <span class="code-kw">return</span> n + <span class="code-fn">triangular</span>(n - <span class="code-num">1</span>)
+
+<span class="code-cm"># triangular(6) → 21</span>
+<span class="code-cm"># because 6+5+4+3+2+1 = 21</span>
+            </div>
+            <div class="math-formula">T(n) = n + T(n−1)&nbsp;&nbsp;&nbsp;with T(0) = 0</div>
+            <div class="point-card">
+              <div class="point-card-label">The recursive relationship</div>
+              <p>The n-th triangular number equals n plus the (n−1)-th triangular number. This <strong>recurrence relation</strong> maps perfectly to a recursive function — each call delegates the smaller sum to itself.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Task 6 - Fibonacci -->
+    <div class="slide" id="slide-4">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">04</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Task 6</div>
+            <div class="slide-heading">The Fibonacci sequence</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Recursive implementation</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">fibonacci</span>(n):
+    <span class="code-kw">if</span> n &lt;= <span class="code-num">2</span>:
+        <span class="code-kw">return</span> <span class="code-num">1</span>          <span class="code-cm"># base case</span>
+    <span class="code-kw">return</span> <span class="code-fn">fibonacci</span>(n-<span class="code-num">1</span>) + <span class="code-fn">fibonacci</span>(n-<span class="code-num">2</span>)
+
+<span class="code-cm"># fibonacci(10) → 55</span>
+            </div>
+            <div class="math-formula">F(n) = F(n−1) + F(n−2)&nbsp;&nbsp;where F(1) = F(2) = 1</div>
+            <div class="point-card">
+              <div class="point-card-label">Two base cases</div>
+              <p>Unlike previous tasks, Fibonacci needs <strong>two base cases</strong>: F(1) = 1 and F(2) = 1. This is because each step depends on the two steps before it, not just one.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">First 10 Fibonacci numbers</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;">
+              <div class="level-cell"><div class="lvl-num">n=1</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">1</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=2</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">1</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=3</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">2</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=4</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">3</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=5</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">5</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=6</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">8</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=7</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">13</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=8</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">21</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=9</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">34</strong></div>
+              <div class="level-cell"><div class="lvl-num">n=10</div><strong style="font-size:18px;font-family:'DM Serif Display',serif;color:var(--leaf-dark)">55</strong></div>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Found in nature</div>
+              <p>The same pattern found in sunflower seed spirals, pinecone scales, and the branching of tree limbs — which is exactly what this project explores.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Tasks 7 & 8 -->
+    <div class="slide" id="slide-5">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">05</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Tasks 7 & 8</div>
+            <div class="slide-heading">Growing the first fractal tree</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Task 7 — simpletree(n)</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">simpletree</span>(n):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        pen.forward(<span class="code-num">50</span>)
+        pos = pen.position()
+        head = pen.heading()
+
+        pen.left(<span class="code-num">30</span>)
+        <span class="code-fn">simpletree</span>(n - <span class="code-num">1</span>)  <span class="code-cm"># left branch</span>
+
+        pen.goto(pos); pen.setheading(head)
+        pen.right(<span class="code-num">30</span>)
+        <span class="code-fn">simpletree</span>(n - <span class="code-num">1</span>)  <span class="code-cm"># right branch</span>
+
+        pen.goto(pos); pen.setheading(head)
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Why this works</div>
+              <p>The function saves its <strong>position and heading</strong> after each trunk segment, then recursively draws a left sub-tree, returns, and draws the right sub-tree. This directly mirrors the hand-drawn instructions from Part 1.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Task 8 — fractaltree(n, length, angle, scale)</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">fractaltree</span>(n, length, angle, scale):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        pen.forward(length)
+        pos = pen.position()
+        head = pen.heading()
+
+        pen.left(angle)
+        <span class="code-fn">fractaltree</span>(n-<span class="code-num">1</span>, length*scale, angle, scale)
+
+        pen.goto(pos); pen.setheading(head)
+        pen.right(angle)
+        <span class="code-fn">fractaltree</span>(n-<span class="code-num">1</span>, length*scale, angle, scale)
+
+        pen.goto(pos); pen.setheading(head)
+            </div>
+            <div class="tag-row" style="margin-top:12px;">
+              <span class="tag">n = level</span>
+              <span class="tag">length = trunk px</span>
+              <span class="tag">angle = branch °</span>
+              <span class="tag bark">scale = shrink ratio</span>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Test: fractaltree(8, 100, 30, 0.75)</div>
+              <p>At scale 0.75, each level's branches are <strong>75% the length</strong> of the previous — creating natural tapering toward the tips.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Task 9 - UI -->
+    <div class="slide" id="slide-6">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">06</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Task 9</div>
+            <div class="slide-heading">Building the user interface</div>
+          </div>
+        </div>
+        <div class="slide-body" style="flex-direction:column;gap:20px;">
+          <div class="two-col">
+            <div>
+              <div class="point-card">
+                <div class="point-card-label">Design choice: GUI over terminal</div>
+                <p>I used <strong>turtle's numinput()</strong> to create popup dialog boxes instead of terminal prompts. This keeps the user focused on the drawing window and feels much more polished.</p>
+              </div>
+              <div class="point-card">
+                <div class="point-card-label">Menu structure</div>
+                <ul class="feature-list">
+                  <li><div class="feature-icon">1</div>Prompt for tree level (1–15)</li>
+                  <li><div class="feature-icon">2</div>Prompt for trunk length (px)</li>
+                  <li><div class="feature-icon">3</div>Prompt for branch angle (°)</li>
+                  <li><div class="feature-icon">4</div>Prompt for scale factor (0–1)</li>
+                  <li><div class="feature-icon">5</div>Clear screen and redraw</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Menu code snippet</div>
+              <div class="code-block">
+<span class="code-cm"># GUI input using turtle's built-in dialogs</span>
+n = screen.numinput(
+    <span class="code-str">"Fractal Tree"</span>,
+    <span class="code-str">"Enter tree level (1–15):"</span>,
+    minval=<span class="code-num">1</span>, maxval=<span class="code-num">15</span>
+)
+length = screen.numinput(
+    <span class="code-str">"Fractal Tree"</span>,
+    <span class="code-str">"Trunk length (pixels):"</span>,
+    minval=<span class="code-num">10</span>, maxval=<span class="code-num">300</span>
+)
+angle = screen.numinput(
+    <span class="code-str">"Fractal Tree"</span>,
+    <span class="code-str">"Branch angle (degrees):"</span>,
+    minval=<span class="code-num">1</span>, maxval=<span class="code-num">90</span>
+)
+scale = screen.numinput(
+    <span class="code-str">"Fractal Tree"</span>,
+    <span class="code-str">"Scale factor (0.1–0.99):"</span>,
+    minval=<span class="code-num">0.1</span>, maxval=<span class="code-num">0.99</span>
+)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Task 10 - Randomness -->
+    <div class="slide" id="slide-7">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">07</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Task 10</div>
+            <div class="slide-heading">Introducing randomness</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">randomfractaltree(n, length, angle, scale)</div>
+            <div class="code-block">
+<span class="code-kw">import</span> random
+
+<span class="code-kw">def</span> <span class="code-fn">randomfractaltree</span>(n, length, angle, scale):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        pen.forward(length)
+        pos = pen.position()
+        head = pen.heading()
+
+        <span class="code-cm"># jitter angle by up to ±15°</span>
+        jitter = random.randint(-<span class="code-num">15</span>, <span class="code-num">15</span>)
+        <span class="code-cm"># jitter scale by ±10%</span>
+        s_jitter = scale * random.uniform(<span class="code-num">0.9</span>, <span class="code-num">1.1</span>)
+
+        pen.left(angle + jitter)
+        <span class="code-fn">randomfractaltree</span>(n-<span class="code-num">1</span>, length*s_jitter,
+                          angle, scale)
+        pen.goto(pos); pen.setheading(head)
+
+        pen.right(angle + jitter)
+        <span class="code-fn">randomfractaltree</span>(n-<span class="code-num">1</span>, length*s_jitter,
+                          angle, scale)
+        pen.goto(pos); pen.setheading(head)
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card">
+              <div class="point-card-label">What's random — and why</div>
+              <p>Two sources of variation are added per branch:</p>
+              <ul class="feature-list" style="margin-top:8px;">
+                <li><div class="feature-icon">A</div><strong style="font-size:13px;">Angle jitter:</strong> ±15° from the base angle mimics wind, light-seeking, and uneven growth.</li>
+                <li><div class="feature-icon">B</div><strong style="font-size:13px;">Scale jitter:</strong> ±10% variation in branch length reflects genetic and environmental noise.</li>
+              </ul>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Result</div>
+              <p>Calling <code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">randomfractaltree(10,80,30,0.8)</code> produces a <strong>different tree every time</strong> — just like real trees grown from the same seed in different spots.</p>
+            </div>
+            <div class="math-formula">This mimics "noise" in nature:<br>wind · sunlight · genetics · soil</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Task 11 - Max Realism -->
+    <div class="slide" id="slide-8">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">08</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Task 11</div>
+            <div class="slide-heading">Maximum realism — the final tree</div>
+          </div>
+        </div>
+        <div class="slide-body">
+          <div class="col">
+            <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Realism enhancements added</div>
+            <div class="code-block">
+<span class="code-kw">def</span> <span class="code-fn">realtree</span>(n, length, angle, scale):
+    <span class="code-kw">if</span> n &gt; <span class="code-num">0</span>:
+        <span class="code-cm"># taper: thicker trunk, thin twigs</span>
+        pen.pensize(max(<span class="code-num">1</span>, n * <span class="code-num">1.2</span>))
+
+        <span class="code-cm"># colour: brown trunk → green tips</span>
+        <span class="code-kw">if</span> n &lt;= <span class="code-num">2</span>:
+            pen.color(<span class="code-str">"forest green"</span>)
+        <span class="code-kw">elif</span> n &lt;= <span class="code-num">4</span>:
+            pen.color(<span class="code-str">"dark green"</span>)
+        <span class="code-kw">else</span>:
+            pen.color(<span class="code-str">"sienna"</span>)
+
+        <span class="code-cm"># random variation as before...</span>
+        jitter = random.randint(-<span class="code-num">20</span>, <span class="code-num">20</span>)
+        pen.forward(length)
+        <span class="code-cm"># ... (recursive calls same as Task 10)</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="point-card">
+              <div class="point-card-label">Tapered thickness</div>
+              <p>Branch thickness is set to <code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">n × 1.2</code> pixels — so the trunk is thick and twigs are hair-thin. Real trees are structurally stronger at the base.</p>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Colour transition</div>
+              <p>High-n levels (trunk, main boughs) are drawn in <strong style="color:#8b4513;">sienna</strong>. Mid-level branches shift to <strong style="color:#006400;">dark green</strong>. The outermost twigs (n ≤ 2) become <strong style="color:#228b22;">forest green</strong> — simulating leaves.</p>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Increased angle randomness</div>
+              <p>Jitter widened to ±20° at the outermost levels gives the canopy a more organic, windswept shape.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Master Menu -->
+    <div class="slide" id="slide-9">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">09</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Architecture</div>
+            <div class="slide-heading">The master menu</div>
+          </div>
+        </div>
+        <div class="slide-body" style="flex-direction:column;">
+          <div class="two-col" style="margin-bottom:20px;">
+            <div class="point-card">
+              <div class="point-card-label">Purpose</div>
+              <p>A master menu links all tasks from a single entry point, making the project <strong>easy to navigate</strong> and professional to present live. Any task can be launched from one screen.</p>
+            </div>
+            <div class="point-card">
+              <div class="point-card-label">Design choice</div>
+              <p>Used <strong>textinput()</strong> for the menu selector and <strong>numinput()</strong> for parameters — keeping everything inside the turtle window. No switching to the terminal mid-demo.</p>
+            </div>
+          </div>
+          <div class="point-card-label" style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--leaf-mid)">Menu structure</div>
+          <div class="timeline">
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 4</div><div class="tl-label">Star triangle</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 5</div><div class="tl-label">Triangular numbers</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 6</div><div class="tl-label">Fibonacci</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 7</div><div class="tl-label">Simple tree</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 8</div><div class="tl-label">Parameterised</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 10</div><div class="tl-label">Random tree</div></div>
+            <div class="tl-item"><div class="tl-dot"></div><div class="tl-num">Task 11</div><div class="tl-label">Realistic tree</div></div>
+          </div>
+          <div class="code-block" style="margin-top:20px;">
+choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
+    <span class="code-str">"Enter task number (4/5/6/7/8/10/11):"</span>)
+
+<span class="code-kw">if</span> choice == <span class="code-str">"4"</span>:
+    n = int(screen.numinput(<span class="code-str">"Stars"</span>, <span class="code-str">"Row count:"</span>))
+    <span class="code-fn">startriangle</span>(n)
+<span class="code-kw">elif</span> choice == <span class="code-str">"7"</span>:
+    n = int(screen.numinput(<span class="code-str">"Simple Tree"</span>, <span class="code-str">"Level:"</span>))
+    <span class="code-fn">simpletree</span>(n)
+<span class="code-cm"># ... etc.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Conclusion -->
+    <div class="slide" id="slide-10">
+      <div class="content-slide">
+        <div class="slide-header">
+          <div class="slide-number">10</div>
+          <div class="slide-heading-group">
+            <div class="slide-label">Reflection</div>
+            <div class="slide-heading">Conclusion & key learnings</div>
+          </div>
+        </div>
+        <div class="slide-body" style="flex-direction:column;gap:20px;">
+          <div class="stat-row">
+            <div class="stat-card"><span class="stat-num">11</span><div class="stat-label">Tasks completed</div></div>
+            <div class="stat-card"><span class="stat-num">v0.11</span><div class="stat-label">Final GitHub release</div></div>
+            <div class="stat-card"><span class="stat-num">∞</span><div class="stat-label">Unique trees generated</div></div>
+          </div>
+          <div class="conclusion-grid">
+            <div class="concl-card featured">
+              <h3>The big idea</h3>
+              <p>Complex shapes found in nature — trees, coastlines, snowflakes — can be described by very simple recursive rules. One function with a base case and a recursive call is all it takes to grow an infinitely detailed fractal from nothing.</p>
+            </div>
+            <div class="concl-card">
+              <h3>Technical challenge</h3>
+              <p>Fixing the <code style="font-family:'DM Mono',monospace;font-size:12px;background:#f0ede0;padding:1px 5px;border-radius:4px;">_tkinter</code> library error on Mac required configuring the correct Python framework build — a reminder that environment setup is part of real programming.</p>
+            </div>
+            <div class="concl-card">
+              <h3>Math encountered</h3>
+              <p>Recurrence relations, geometric scaling (powers of the scale factor), and the connection between Fibonacci numbers and natural growth all surfaced naturally through the code.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const TOTAL = 10;
+  let current = 1;
+
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('button');
+    d.className = 'nav-dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    const prev = document.getElementById('slide-' + current);
+    if (prev) { prev.classList.remove('active'); }
+    current = n;
+    const next = document.getElementById('slide-' + current);
+    if (next) { next.classList.add('active'); }
+    document.getElementById('counter').textContent = current + ' / ' + TOTAL;
+    const dots = dotsEl.querySelectorAll('.nav-dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i + 1 === current));
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === TOTAL;
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= TOTAL) goTo(next);
+  }
+
+  goTo(1);
+</script>
+ 
