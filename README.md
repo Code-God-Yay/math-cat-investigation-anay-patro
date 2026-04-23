@@ -32,3 +32,4 @@ Recursion works by breaking a big problem into smaller versions of the same prob
 The hardest part was getting the realistic tree to look right. I found that if the 'scale factor' is too high, the tree grows off the screen, and if the 'level' is over 15, the computer slows down a lot because it's calculating thousands of branches. Adding the \`random\` library made a huge difference in making the trees look like actual plants instead of perfect geometric shapes.
 EOF
 
+ 
