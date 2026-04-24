@@ -876,13 +876,9 @@
                       <input id="trunk" type="range" min="60" max="160" value="110" step="1">
                     </div>
                     <div class="control">
-                      <label><span>Mode</span><span id="modeVal">Clean</span></label>
-                      <select id="mode" class="select">
-                        <option value="clean" selected>Clean (symmetric)</option>
-                        <option value="random">Random (wobbly)</option>
-                        <option value="realistic">Realistic (taper + green tips)</option>
-                      </select>
-                      <small>Random modes use a seed so you can reproduce a “good” tree.</small>
+                      <label><span>Realism</span><span id="realismVal">0%</span></label>
+                      <input id="realism" type="range" min="0" max="100" value="0" step="1">
+                      <small>0% = clean and symmetric. 100% = taper + green tips + “nature noise”.</small>
                     </div>
                     <div class="control">
                       <label><span>Seed</span><span id="seedVal">42</span></label>
@@ -1137,7 +1133,7 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
         <div class="slide-body" style="flex-direction:column;gap:20px;">
           <div class="stat-row">
             <div class="stat-card"><span class="stat-num">11</span><div class="stat-label">Tasks completed</div></div>
-            <div class="stat-card"><span class="stat-num">v0.11</span><div class="stat-label">Final GitHub release</div></div>
+            <div class="stat-card"><span class="stat-num">v1.2</span><div class="stat-label">Stable release</div></div>
             <div class="stat-card"><span class="stat-num">∞</span><div class="stat-label">Unique trees generated</div></div>
           </div>
           <div class="conclusion-grid">
@@ -1247,18 +1243,21 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
 
     let angleJitter = 0;
     let lengthJitter = 1;
-    if (mode !== "clean") {
-      // stronger wobble near the tips than at the trunk
-      const wobble = mode === "realistic" ? 16 : 12;
+    if (mode.realism > 0) {
+      // realism controls how much “nature noise” we add
+      const wobbleMax = 16;
+      const wobble = wobbleMax * mode.realism;
       angleJitter = (rand() * 2 - 1) * wobble;
-      lengthJitter = 0.85 + rand() * 0.3; // 0.85–1.15
+
+      const spread = 0.3 * mode.realism; // 0..0.3
+      lengthJitter = (1 - spread / 2) + rand() * spread; // centred around 1
     }
 
     const x2 = x + Math.cos(headingRad) * len;
     const y2 = y + Math.sin(headingRad) * len;
 
     // thickness + colour rules
-    if (mode === "realistic") {
+    if (mode.realism >= 0.6) {
       ctx.lineWidth = clamp(depth * 0.85, 1, 10);
       ctx.strokeStyle = depth <= 2 ? "#2d5a1b" : "#7a5232";
     } else {
@@ -1278,11 +1277,8 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     return 1 + leftCalls + rightCalls;
   }
 
-  function buildLiveCode(depth, trunk, angle, scale, mode, seed) {
-    const modeLine =
-      mode === "clean"
-        ? "# mode: clean (no randomness)"
-        : `# mode: ${mode} (seed=${seed})`;
+  function buildLiveCode(depth, trunk, angle, scale, realism, seed) {
+    const modeLine = `# realism: ${Math.round(realism * 100)}% (seed=${seed})`;
     return [
       "def fractaltree(n, length, angle, scale):",
       "    if n <= 0:",
@@ -1309,14 +1305,14 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     const angle = parseInt($("angle").value, 10);
     const scale = parseFloat($("scale").value);
     const trunk = parseInt($("trunk").value, 10);
-    const mode = $("mode")?.value || "clean";
+    const realism = clamp(parseInt($("realism")?.value || "0", 10) / 100, 0, 1);
     const seed = parseInt($("seed")?.value || "42", 10);
 
     setText("depthVal", String(depth));
     setText("angleVal", `${angle}°`);
     setText("scaleVal", scale.toFixed(2));
     setText("trunkVal", `${trunk}px`);
-    setText("modeVal", mode === "clean" ? "Clean" : mode === "random" ? "Random" : "Realistic");
+    setText("realismVal", `${Math.round(realism * 100)}%`);
     setText("seedVal", String(seed));
 
     clearCanvas();
@@ -1324,6 +1320,7 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     // start near bottom-centre, heading up
     const start = performance.now();
     const rand = makeRng(seed);
+    const mode = { realism };
     const calls = drawBranch(demo.width / 2, demo.height - 20, trunk, -Math.PI / 2, depth, angle, scale, mode, rand);
     const ms = Math.round(performance.now() - start);
 
@@ -1335,7 +1332,7 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
       `Branches: ${expectedBranches.toLocaleString()}${perfHint}\nCalls: ${calls.toLocaleString()}\nTime: ${ms}ms`
     );
 
-    $("liveCode").textContent = buildLiveCode(depth, trunk, angle, scale, mode, seed);
+    $("liveCode").textContent = buildLiveCode(depth, trunk, angle, scale, realism, seed);
   }
 
   function randomizeDemo() {
@@ -1344,18 +1341,16 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     $("scale").value = (0.62 + Math.random() * 0.22).toFixed(2); // 0.62–0.84
     $("trunk").value = String(85 + Math.floor(Math.random() * 45)); // 85–129
     $("seed").value = String(Math.floor(Math.random() * 10000));
-    const modes = ["clean", "random", "realistic"];
-    $("mode").value = modes[Math.floor(Math.random() * modes.length)];
+    $("realism").value = String(Math.floor(Math.random() * 101));
     renderDemo();
   }
 
   // Wire up controls (only if the demo exists on the page)
   if (demo && ctx) {
-    ["depth", "angle", "scale", "trunk", "seed"].forEach((id) => {
+    ["depth", "angle", "scale", "trunk", "seed", "realism"].forEach((id) => {
       const el = $(id);
       if (el) el.addEventListener("input", () => renderDemo());
     });
-    $("mode")?.addEventListener("change", () => renderDemo());
     $("drawBtn")?.addEventListener("click", () => renderDemo());
     $("randomBtn")?.addEventListener("click", () => randomizeDemo());
     $("copyCodeBtn")?.addEventListener("click", async () => {
