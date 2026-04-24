@@ -2,6 +2,8 @@
 
 By **Anay Patro**
 
+**Stable release: v1.3**
+
 ## Presentation website
 - **Live version**: [View the slides on GitHub Pages](https://code-god-yay.github.io/math-cat-investigation-anay-patro/)
 - **Run locally**: open `index.html` in your browser (or use a simple local server)
@@ -35,9 +37,16 @@ If turtle doesn’t open a window, make sure you’re not running inside a restr
 
 ## Project files (high level)
 - `index.html`: the website / slide deck
+- `styles.css`: website styles (separate file)
+- `app.js`: website scripts (separate file)
 - `menu.py`: launcher for the investigation tasks
 - `main.py`: “My Tree Maker” interactive tree generator
-- `task-4.py` … `task-11.py`: individual tasks from the investigation
+- `task-4.py` … `task-11.py`: coded tasks from the investigation
+
+## Tasks completed (12 total)
+- **Tasks 1–3**: covered in the website slides (concepts + explanations)
+- **Tasks 4–11**: implemented as Python programs (`task-4.py` … `task-11.py`)
+- **Task 12**: the presentation website (interactive demos + write-up)
 
 ## Key takeaways
 - **Recursion needs a base case** (a stopping condition), otherwise it keeps calling forever.
