@@ -1,35 +1,30 @@
-# Append the live link to the top of your README
-cat <<EOF > README.md
-# Year 8 Maths Investigation - Recursion
+# Year 8 Maths Investigation — Recursion
 By Anay Patro
 
-### [View My Live Presentation Slides Here](https://code-god-yay.github.io/math-cat-investigation-anay-patro/)
-## What This Project Does
-This is my investigation into recursion — when a function calls itself. I've built several programs that use recursion to draw fractal trees and calculate maths sequences.
+### Live slides
+[View the presentation website](https://code-god-yay.github.io/math-cat-investigation-anay-patro/)
 
-## Quick Start
-To start the project, run:
-\`\`\`bash
+## What this project is
+This is my investigation into **recursion** (when a function calls itself). I built small programs that:
+- Print recursive patterns (stars, triangular numbers, Fibonacci)
+- Draw **fractal trees** using Turtle graphics
+- Add randomness + styling so the trees look more natural
+
+## Quick start (run the Python menu)
+
+```bash
 python3 menu.py
-\`\`\`
-Pick a task from the menu to explore different examples of recursion.
+```
 
-## What I Learned
-Recursion works by breaking a big problem into smaller versions of the same problem. For example:
-- **Drawing Trees:** Each branch splits into two smaller branches, and each of those splits again, until we reach a limit.
-- **Maths Sequences:** To find the 5th triangular number, I find the 4th and add 5 to it. To find the 4th, I find the 3rd and add 4, and so on.
+Then pick a task number to run.
 
-## My Challenges
-1. **The _tkinter Problem:** My turtle graphics window wouldn't show up at first. I had to install _tkinter separately because it doesn't come with Python by default on all computers.
-2. **Making Random Trees Look Real:** If I made the branches too random, they looked broken. If I didn't make them random enough, they looked fake. I had to find the right balance (angles between -10 and +10 degrees worked best).
+## Files
+- `index.html`: the website / slide deck
+- `menu.py`: turtle-based launcher for the tasks
+- `main.py`: “My Tree Maker” app (interactive tree generator)
+- `task-4.py` … `task-11.py`: individual tasks from the investigation
 
-## Files in This Project
-* \`menu.py\` — Opens the main menu
-* \`main.py\` — The full tree maker app (My Tree Maker)
-* \`task-4.py\` to \`task-11.py\` — Individual tasks showing different parts of recursion
-
-## My Investigation Notes
-The hardest part was getting the realistic tree to look right. I found that if the 'scale factor' is too high, the tree grows off the screen, and if the 'level' is over 15, the computer slows down a lot because it's calculating thousands of branches. Adding the \`random\` library made a huge difference in making the trees look like actual plants instead of perfect geometric shapes.
-EOF
-
- 
+## Notes (what mattered most)
+- **Recursion always needs a stopping point** (a base case), otherwise it keeps calling itself forever.
+- Trees get expensive fast: each level roughly doubles the number of branches, so huge depths can lag.
+- A small amount of randomness makes the output feel “alive”, but too much randomness makes it look broken.

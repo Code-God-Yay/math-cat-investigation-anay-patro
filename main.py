@@ -1,86 +1,117 @@
-import turtle
 import random
+import turtle
 
-def draw_realistic_tree(depth, length, angle, scale):
-    """Draw a tree that looks like a real tree with thick trunks and thin branches."""
-    if depth > 0:
-        # Make branches thicker near the bottom and thinner at the top
-        drawing_pen.pensize(depth * 0.8)
-        
-        # Use brown for the trunk and green for the leaves
-        if depth < 3:
-            drawing_pen.color("forest green")
-        else:
-            drawing_pen.color("sienna")
 
-        # Add a bit of randomness so each tree looks different
-        current_scale = scale * random.uniform(0.85, 1.15)
-        current_length = length * current_scale
-        left_angle = angle + random.randint(-12, 12)
-        right_angle = angle + random.randint(-12, 12)
+def draw_realistic_tree(depth: int, length: float, angle: float, scale: float) -> None:
+    """Draw a more “real” fractal tree.
 
-        # Draw the branch
-        drawing_pen.forward(current_length)
-        drawing_pen.left(left_angle)
-        draw_realistic_tree(depth - 1, length * scale, angle, scale)
-        drawing_pen.right(left_angle + right_angle)
-        draw_realistic_tree(depth - 1, length * scale, angle, scale)
-        drawing_pen.left(right_angle)
-        
-        # Go back without leaving a line behind (so we don't see ghost lines)
-        drawing_pen.penup()
-        drawing_pen.backward(current_length)
-        drawing_pen.pendown()
+    I wanted this to feel less like perfect geometry and more like something
+    you’d actually see outside. The small randomness is intentional: it stops
+    the tree from looking copy-pasted at every branch.
+    """
+    if depth <= 0:
+        return
 
-def start_app():
-    """Run the tree maker app with pop-up windows to get settings from the user."""
+    # Thickness is a cheat that makes the picture read better: big trunk, tiny twigs.
+    drawing_pen.pensize(max(1, int(depth * 0.8)))
+
+    # A simple colour rule: brown-ish trunk, green-ish tips.
+    drawing_pen.color("forest green" if depth <= 2 else "sienna")
+
+    # “Nature noise”: a little variation per branch, not enough to look broken.
+    length_jitter = length * random.uniform(0.85, 1.15)
+    left_angle = angle + random.randint(-12, 12)
+    right_angle = angle + random.randint(-12, 12)
+
+    drawing_pen.forward(length_jitter)
+
+    drawing_pen.left(left_angle)
+    draw_realistic_tree(depth - 1, length * scale, angle, scale)
+
+    drawing_pen.right(left_angle + right_angle)
+    draw_realistic_tree(depth - 1, length * scale, angle, scale)
+
+    drawing_pen.left(right_angle)
+
+    # “Teleport back” so we don’t draw a return line.
+    drawing_pen.penup()
+    drawing_pen.backward(length_jitter)
+    drawing_pen.pendown()
+
+
+def reset_pen() -> None:
+    """Put the pen in a good starting position for a new tree."""
+    drawing_pen.clear()
+    drawing_pen.penup()
+    drawing_pen.goto(0, -260)
+    drawing_pen.setheading(90)
+    drawing_pen.pendown()
+
+
+def start_app() -> None:
+    """Interactive tree maker using turtle's built-in popups."""
     while True:
-        # Ask the user how deep they want the tree to go
-        depth = tree_window.numinput("My Tree Maker", "How many levels deep should the tree go? (Try 10-12):", default=10, minval=1, maxval=15)
-        if depth is None: 
-            break
-        
-        # Ask for the trunk length
-        trunk_length = tree_window.numinput("My Tree Maker", "How long should the trunk be? (Try 80):", default=80)
-        if trunk_length is None:
-            break
-        
-        # Ask for the branching angle
-        branch_angle = tree_window.numinput("My Tree Maker", "What angle should the branches go? (Try 25):", default=25)
-        if branch_angle is None:
-            break
-        
-        # Ask for the scale (how much smaller each level gets)
-        scale_factor = tree_window.numinput("My Tree Maker", "How much smaller should each level be? (Try 0.8):", default=0.8, minval=0.1, maxval=0.9)
-        if scale_factor is None:
-            break
+        depth = tree_window.numinput(
+            "My Tree Maker",
+            "Tree depth (levels). 10–12 looks good:",
+            default=10,
+            minval=1,
+            maxval=15,
+        )
+        if depth is None:
+            return
 
-        # Clear the screen and get ready to draw
-      up the window and drawing pen
+        trunk_length = tree_window.numinput(
+            "My Tree Maker",
+            "Trunk length (pixels). Try ~80:",
+            default=80,
+            minval=10,
+            maxval=300,
+        )
+        if trunk_length is None:
+            return
+
+        branch_angle = tree_window.numinput(
+            "My Tree Maker",
+            "Branch angle (degrees). Try ~25:",
+            default=25,
+            minval=1,
+            maxval=90,
+        )
+        if branch_angle is None:
+            return
+
+        scale_factor = tree_window.numinput(
+            "My Tree Maker",
+            "Scale factor per level. Try ~0.8:",
+            default=0.8,
+            minval=0.1,
+            maxval=0.95,
+        )
+        if scale_factor is None:
+            return
+
+        reset_pen()
+        draw_realistic_tree(int(depth), float(trunk_length), float(branch_angle), float(scale_factor))
+        tree_window.update()
+
+        again = tree_window.textinput("Done!", "Draw another? Type 'y' for yes:")
+        if again is None or again.strip().lower() != "y":
+            return
+
+
 tree_window = turtle.Screen()
-tree_window.title("My Tree Maker - Anay Patro")
+tree_window.title("My Tree Maker — Anay Patro")
 tree_window.bgcolor("honeydew")
 tree_window.tracer(0)
 
 drawing_pen = turtle.Turtle()
-drawing_        # Draw the tree with the settings the user chose
-        draw_realistic_tree(int(depth), trunk_length, branch_angle, scale_factor)
-        tree_window.update()
+drawing_pen.hideturtle()
+drawing_pen.speed(0)
 
-        # Ask if they want to draw another tree
-        again = tree_window.textinput("Done!", "Close this to go back, or type 'y' to draw another tree:")
-        if again is None or again.lower() != 'y':
-            break
-
-# Setup
-screen = turtle.Screen()
-screen.title("Anay's Ultimate Realistic Fractal Tree")
-screen.bgcolor("white")
-screen.tracer(0)
-pen = turtle.Turtle()
-pen.hideturtle()
 
 if __name__ == "__main__":
+    reset_pen()
     start_app()
     turtle.done()
 

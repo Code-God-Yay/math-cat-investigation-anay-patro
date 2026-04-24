@@ -9,18 +9,14 @@ def draw_fractal_tree(depth, branch_length, branch_angle, shrink_factor):
     shrink_factor: how much smaller each level gets (e.g., 0.75 = 75% of parent size)
     """
     if depth > 0:
-        # Draw a branch forward
         drawing_pen.forward(branch_length)
         
-        # Draw the left branch
         drawing_pen.left(branch_angle)
         draw_fractal_tree(depth - 1, branch_length * shrink_factor, branch_angle, shrink_factor)
         
-        # Draw the right branch
         drawing_pen.right(branch_angle * 2)
         draw_fractal_tree(depth - 1, branch_length * shrink_factor, branch_angle, shrink_factor)
         
-        # Go back to where this branch started
         drawing_pen.left(branch_angle)
         drawing_pen.backward(branch_length)
 

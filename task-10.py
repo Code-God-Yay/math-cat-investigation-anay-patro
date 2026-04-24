@@ -7,23 +7,19 @@ def draw_random_tree(depth, branch_length, branch_angle, shrink_factor):
     This makes the tree look more natural!
     """
     if depth > 0:
-        # Make each branch length a bit different (between 80% and 120% of normal)
-        # This gives the tree a more natural, uneven look
+        # A little unevenness makes it look alive.
         current_shrink = shrink_factor * random.uniform(0.8, 1.2)
         current_length = branch_length * current_shrink
         
         drawing_pen.forward(current_length)
 
-        # Make each branch angle a bit different (randomly offset by -10 to +10 degrees)
-        # This adds variation to how the branches spread
+        # Angle wobble stops it looking like a perfect snowflake.
         left_angle = branch_angle + random.randint(-10, 10)
         right_angle = branch_angle + random.randint(-10, 10)
 
-        # Draw the left side with the randomized angle
         drawing_pen.left(left_angle)
         draw_random_tree(depth - 1, branch_length * shrink_factor, branch_angle, shrink_factor)
         
-        # Draw the right side with its own randomized angle
         drawing_pen.right(left_angle + right_angle)
         draw_random_tree(depth - 1, branch_length * shrink_factor, branch_angle, shrink_factor)
 

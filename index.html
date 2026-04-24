@@ -309,11 +309,108 @@
     background: #f0f7ee;
     border: 0.5px solid #c8dfc0;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 20px;
     min-height: 200px;
+  }
+
+  .demo-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--leaf-mid);
+    margin-bottom: 10px;
+  }
+
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .demo-canvas {
+    width: 100%;
+    height: 260px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 0.5px solid #d8e7d2;
+    display: block;
+  }
+
+  .demo-controls {
+    background: #ffffff;
+    border: 0.5px solid #d8e7d2;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .control {
+    margin-bottom: 10px;
+  }
+  .control label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+  }
+  .control input[type="range"] { width: 100%; }
+  .control small { display: block; color: #6b6b63; font-size: 11px; margin-top: 4px; }
+
+  .demo-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .btn {
+    border: 0.5px solid #cfcabb;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn.primary {
+    border-color: var(--leaf-mid);
+    background: #f0f7ee;
+    color: var(--leaf-dark);
+    font-weight: 500;
+  }
+
+  .mini-stat {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--sky);
+    border: 0.5px solid #b8d4c8;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--leaf-dark);
+    line-height: 1.5;
+  }
+
+  .code-block .copy-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .code-block .copy-row span {
+    color: #c8e6b0;
+    opacity: 0.9;
+    font-size: 11px;
+  }
+  .copy-btn {
+    border: 0.5px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.9);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
   }
 
   /* Slide 5 - Tasks visual */
@@ -741,6 +838,49 @@
               <div class="point-card-label">Test: fractaltree(8, 100, 30, 0.75)</div>
               <p>At scale 0.75, each level's branches are <strong>75% the length</strong> of the previous — creating natural tapering toward the tips.</p>
             </div>
+
+            <div class="point-card" style="margin-top:12px;">
+              <div class="point-card-label">Interactive demo (runs in your browser)</div>
+              <p>Slide the values, hit draw, and the tree updates instantly. This is the same idea as the Turtle version — just rendered on a canvas.</p>
+              <div class="tree-panel" style="margin-top:12px;">
+                <div class="demo-title">Fractal Tree Playground</div>
+                <div class="demo-grid">
+                  <canvas class="demo-canvas" id="treeDemo" width="900" height="520"></canvas>
+                  <div class="demo-controls">
+                    <div class="control">
+                      <label><span>Depth</span><span id="depthVal">8</span></label>
+                      <input id="depth" type="range" min="1" max="12" value="8" step="1">
+                      <small>Higher depth = more branches (and more work).</small>
+                    </div>
+                    <div class="control">
+                      <label><span>Angle</span><span id="angleVal">30°</span></label>
+                      <input id="angle" type="range" min="5" max="60" value="30" step="1">
+                    </div>
+                    <div class="control">
+                      <label><span>Scale</span><span id="scaleVal">0.75</span></label>
+                      <input id="scale" type="range" min="0.55" max="0.88" value="0.75" step="0.01">
+                    </div>
+                    <div class="control">
+                      <label><span>Trunk</span><span id="trunkVal">110px</span></label>
+                      <input id="trunk" type="range" min="60" max="160" value="110" step="1">
+                    </div>
+                    <div class="demo-actions">
+                      <button class="btn primary" id="drawBtn" type="button">Draw</button>
+                      <button class="btn" id="randomBtn" type="button">Randomize</button>
+                    </div>
+                    <div class="mini-stat" id="demoStats">Branches: —<br>Calls: —</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-block" style="margin-top:12px;" id="liveCodeBlock">
+                <div class="copy-row">
+                  <span>Live code (Python-style pseudocode)</span>
+                  <button class="copy-btn" id="copyCodeBtn" type="button">Copy</button>
+                </div>
+                <pre id="liveCode" style="white-space:pre; margin:0;"></pre>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1028,6 +1168,126 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
   }
 
   goTo(1);
+
+  // ----- Interactive fractal tree demo (canvas) -----
+  const $ = (id) => document.getElementById(id);
+  const demo = $("treeDemo");
+  const ctx = demo.getContext("2d");
+
+  function setText(id, text) {
+    const el = $(id);
+    if (el) el.textContent = text;
+  }
+
+  function clamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, v));
+  }
+
+  function degreesToRad(deg) {
+    return (deg * Math.PI) / 180;
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, demo.width, demo.height);
+    // a soft background so the branches pop a bit
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, demo.width, demo.height);
+  }
+
+  function drawBranch(x, y, len, headingRad, depth, angleDeg, scale) {
+    if (depth <= 0 || len < 2) return 0;
+
+    const x2 = x + Math.cos(headingRad) * len;
+    const y2 = y + Math.sin(headingRad) * len;
+
+    // thickness fades as we go up the tree
+    ctx.lineWidth = clamp(depth * 0.7, 1, 8);
+    ctx.strokeStyle = depth <= 2 ? "#2d5a1b" : "#6b4a2d";
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    const a = degreesToRad(angleDeg);
+    const nextLen = len * scale;
+
+    const leftCalls = drawBranch(x2, y2, nextLen, headingRad - a, depth - 1, angleDeg, scale);
+    const rightCalls = drawBranch(x2, y2, nextLen, headingRad + a, depth - 1, angleDeg, scale);
+    return 1 + leftCalls + rightCalls;
+  }
+
+  function buildLiveCode(depth, trunk, angle, scale) {
+    return [
+      "def fractaltree(n, length, angle, scale):",
+      "    if n <= 0:",
+      "        return",
+      "    forward(length)",
+      "    saved_pos, saved_heading = position(), heading()",
+      "",
+      "    left(angle)",
+      "    fractaltree(n - 1, length * scale, angle, scale)",
+      "",
+      "    goto(saved_pos); setheading(saved_heading)",
+      "    right(angle)",
+      "    fractaltree(n - 1, length * scale, angle, scale)",
+      "",
+      "    goto(saved_pos); setheading(saved_heading)",
+      "",
+      `# demo call: fractaltree(${depth}, ${trunk}, ${angle}, ${scale.toFixed(2)})`,
+    ].join("\n");
+  }
+
+  function renderDemo() {
+    const depth = parseInt($("depth").value, 10);
+    const angle = parseInt($("angle").value, 10);
+    const scale = parseFloat($("scale").value);
+    const trunk = parseInt($("trunk").value, 10);
+
+    setText("depthVal", String(depth));
+    setText("angleVal", `${angle}°`);
+    setText("scaleVal", scale.toFixed(2));
+    setText("trunkVal", `${trunk}px`);
+
+    clearCanvas();
+
+    // start near bottom-centre, heading up
+    const calls = drawBranch(demo.width / 2, demo.height - 20, trunk, -Math.PI / 2, depth, angle, scale);
+    const branches = calls; // each call draws exactly one segment
+    setText("demoStats", `Branches: ${branches.toLocaleString()}\nCalls: ${calls.toLocaleString()}`);
+
+    $("liveCode").textContent = buildLiveCode(depth, trunk, angle, scale);
+  }
+
+  function randomizeDemo() {
+    $("depth").value = String(6 + Math.floor(Math.random() * 6)); // 6–11
+    $("angle").value = String(18 + Math.floor(Math.random() * 22)); // 18–39
+    $("scale").value = (0.62 + Math.random() * 0.22).toFixed(2); // 0.62–0.84
+    $("trunk").value = String(85 + Math.floor(Math.random() * 45)); // 85–129
+    renderDemo();
+  }
+
+  // Wire up controls (only if the demo exists on the page)
+  if (demo && ctx) {
+    ["depth", "angle", "scale", "trunk"].forEach((id) => {
+      const el = $(id);
+      if (el) el.addEventListener("input", () => renderDemo());
+    });
+    $("drawBtn")?.addEventListener("click", () => renderDemo());
+    $("randomBtn")?.addEventListener("click", () => randomizeDemo());
+    $("copyCodeBtn")?.addEventListener("click", async () => {
+      const text = $("liveCode").textContent || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        $("copyCodeBtn").textContent = "Copied";
+        setTimeout(() => ($("copyCodeBtn").textContent = "Copy"), 900);
+      } catch {
+        // fallback: do nothing (clipboard can be blocked on some browsers)
+      }
+    });
+
+    // Draw once on load
+    renderDemo();
+  }
 </script>
  
   

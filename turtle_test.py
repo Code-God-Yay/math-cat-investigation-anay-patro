@@ -1,3 +1,4 @@
+#  A simple turtle program to draw a rectangle
 import turtle
 
 # create turtle screen and set background colour

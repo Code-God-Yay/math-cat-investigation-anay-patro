@@ -1,17 +1,17 @@
 import turtle
 
 def draw_simple_tree(depth):
-    """Draw a tree by recursively drawing branches that split."""
+    """Draw a “starter” fractal tree.
+
+    This one is deliberately simple: fixed branch length + fixed split angle.
+    It's the first version that makes the recursion idea visually obvious.
+    """
     if depth > 0:
-        # Draw a branch going forward
         drawing_pen.forward(50)
-        # Turn left and draw the left branch
         drawing_pen.left(30)
         draw_simple_tree(depth - 1)
-        # Turn right and draw the right branch
         drawing_pen.right(60)
         draw_simple_tree(depth - 1)
-        # Go back to where we started
         drawing_pen.left(30)
         drawing_pen.backward(50)
 

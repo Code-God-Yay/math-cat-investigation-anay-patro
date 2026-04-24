@@ -55,7 +55,7 @@ drawing_pen.pendown()
 print("Creating a realistic tree...")
 draw_realistic_tree(10, 80, 30, 0.8)
 tree_window.update()
-
+# print done message
 print("Done! Close the window to exit.")
 turtle.done()
 
