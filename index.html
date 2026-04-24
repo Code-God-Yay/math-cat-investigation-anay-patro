@@ -363,6 +363,17 @@
     gap: 8px;
     margin-top: 10px;
   }
+
+  .select {
+    width: 100%;
+    border: 0.5px solid #d8d3c4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: 'Outfit', sans-serif;
+    background: #fff;
+    color: var(--text-main);
+  }
   .btn {
     border: 0.5px solid #cfcabb;
     background: #fff;
@@ -864,6 +875,19 @@
                       <label><span>Trunk</span><span id="trunkVal">110px</span></label>
                       <input id="trunk" type="range" min="60" max="160" value="110" step="1">
                     </div>
+                    <div class="control">
+                      <label><span>Mode</span><span id="modeVal">Clean</span></label>
+                      <select id="mode" class="select">
+                        <option value="clean" selected>Clean (symmetric)</option>
+                        <option value="random">Random (wobbly)</option>
+                        <option value="realistic">Realistic (taper + green tips)</option>
+                      </select>
+                      <small>Random modes use a seed so you can reproduce a “good” tree.</small>
+                    </div>
+                    <div class="control">
+                      <label><span>Seed</span><span id="seedVal">42</span></label>
+                      <input id="seed" type="range" min="0" max="9999" value="42" step="1">
+                    </div>
                     <div class="demo-actions">
                       <button class="btn primary" id="drawBtn" type="button">Draw</button>
                       <button class="btn" id="randomBtn" type="button">Randomize</button>
@@ -1174,6 +1198,20 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
   const demo = $("treeDemo");
   const ctx = demo.getContext("2d");
 
+  function activeElementIsTypingField() {
+    const el = document.activeElement;
+    if (!el) return false;
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || tag === "select";
+  }
+
+  // Slide navigation shortcuts (works anywhere, unless you're editing a field)
+  document.addEventListener("keydown", (e) => {
+    if (activeElementIsTypingField()) return;
+    if (e.key === "ArrowLeft") changeSlide(-1);
+    if (e.key === "ArrowRight") changeSlide(1);
+  });
+
   function setText(id, text) {
     const el = $(id);
     if (el) el.textContent = text;
@@ -1194,29 +1232,57 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     ctx.fillRect(0, 0, demo.width, demo.height);
   }
 
-  function drawBranch(x, y, len, headingRad, depth, angleDeg, scale) {
+  function makeRng(seed) {
+    // tiny deterministic RNG so “random mode” is repeatable
+    let s = (seed >>> 0) || 1;
+    return () => {
+      // LCG (Numerical Recipes)
+      s = (1664525 * s + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function drawBranch(x, y, len, headingRad, depth, angleDeg, scale, mode, rand) {
     if (depth <= 0 || len < 2) return 0;
+
+    let angleJitter = 0;
+    let lengthJitter = 1;
+    if (mode !== "clean") {
+      // stronger wobble near the tips than at the trunk
+      const wobble = mode === "realistic" ? 16 : 12;
+      angleJitter = (rand() * 2 - 1) * wobble;
+      lengthJitter = 0.85 + rand() * 0.3; // 0.85–1.15
+    }
 
     const x2 = x + Math.cos(headingRad) * len;
     const y2 = y + Math.sin(headingRad) * len;
 
-    // thickness fades as we go up the tree
-    ctx.lineWidth = clamp(depth * 0.7, 1, 8);
-    ctx.strokeStyle = depth <= 2 ? "#2d5a1b" : "#6b4a2d";
+    // thickness + colour rules
+    if (mode === "realistic") {
+      ctx.lineWidth = clamp(depth * 0.85, 1, 10);
+      ctx.strokeStyle = depth <= 2 ? "#2d5a1b" : "#7a5232";
+    } else {
+      ctx.lineWidth = clamp(depth * 0.7, 1, 8);
+      ctx.strokeStyle = depth <= 2 ? "#2d5a1b" : "#6b4a2d";
+    }
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x2, y2);
     ctx.stroke();
 
-    const a = degreesToRad(angleDeg);
-    const nextLen = len * scale;
+    const a = degreesToRad(angleDeg + angleJitter);
+    const nextLen = len * scale * lengthJitter;
 
-    const leftCalls = drawBranch(x2, y2, nextLen, headingRad - a, depth - 1, angleDeg, scale);
-    const rightCalls = drawBranch(x2, y2, nextLen, headingRad + a, depth - 1, angleDeg, scale);
+    const leftCalls = drawBranch(x2, y2, nextLen, headingRad - a, depth - 1, angleDeg, scale, mode, rand);
+    const rightCalls = drawBranch(x2, y2, nextLen, headingRad + a, depth - 1, angleDeg, scale, mode, rand);
     return 1 + leftCalls + rightCalls;
   }
 
-  function buildLiveCode(depth, trunk, angle, scale) {
+  function buildLiveCode(depth, trunk, angle, scale, mode, seed) {
+    const modeLine =
+      mode === "clean"
+        ? "# mode: clean (no randomness)"
+        : `# mode: ${mode} (seed=${seed})`;
     return [
       "def fractaltree(n, length, angle, scale):",
       "    if n <= 0:",
@@ -1233,6 +1299,7 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
       "",
       "    goto(saved_pos); setheading(saved_heading)",
       "",
+      modeLine,
       `# demo call: fractaltree(${depth}, ${trunk}, ${angle}, ${scale.toFixed(2)})`,
     ].join("\n");
   }
@@ -1242,20 +1309,33 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     const angle = parseInt($("angle").value, 10);
     const scale = parseFloat($("scale").value);
     const trunk = parseInt($("trunk").value, 10);
+    const mode = $("mode")?.value || "clean";
+    const seed = parseInt($("seed")?.value || "42", 10);
 
     setText("depthVal", String(depth));
     setText("angleVal", `${angle}°`);
     setText("scaleVal", scale.toFixed(2));
     setText("trunkVal", `${trunk}px`);
+    setText("modeVal", mode === "clean" ? "Clean" : mode === "random" ? "Random" : "Realistic");
+    setText("seedVal", String(seed));
 
     clearCanvas();
 
     // start near bottom-centre, heading up
-    const calls = drawBranch(demo.width / 2, demo.height - 20, trunk, -Math.PI / 2, depth, angle, scale);
-    const branches = calls; // each call draws exactly one segment
-    setText("demoStats", `Branches: ${branches.toLocaleString()}\nCalls: ${calls.toLocaleString()}`);
+    const start = performance.now();
+    const rand = makeRng(seed);
+    const calls = drawBranch(demo.width / 2, demo.height - 20, trunk, -Math.PI / 2, depth, angle, scale, mode, rand);
+    const ms = Math.round(performance.now() - start);
 
-    $("liveCode").textContent = buildLiveCode(depth, trunk, angle, scale);
+    const expectedBranches = Math.pow(2, depth) - 1;
+    const perfHint =
+      expectedBranches > 4000 ? " (tip: lower depth/scale)" : "";
+    setText(
+      "demoStats",
+      `Branches: ${expectedBranches.toLocaleString()}${perfHint}\nCalls: ${calls.toLocaleString()}\nTime: ${ms}ms`
+    );
+
+    $("liveCode").textContent = buildLiveCode(depth, trunk, angle, scale, mode, seed);
   }
 
   function randomizeDemo() {
@@ -1263,15 +1343,19 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
     $("angle").value = String(18 + Math.floor(Math.random() * 22)); // 18–39
     $("scale").value = (0.62 + Math.random() * 0.22).toFixed(2); // 0.62–0.84
     $("trunk").value = String(85 + Math.floor(Math.random() * 45)); // 85–129
+    $("seed").value = String(Math.floor(Math.random() * 10000));
+    const modes = ["clean", "random", "realistic"];
+    $("mode").value = modes[Math.floor(Math.random() * modes.length)];
     renderDemo();
   }
 
   // Wire up controls (only if the demo exists on the page)
   if (demo && ctx) {
-    ["depth", "angle", "scale", "trunk"].forEach((id) => {
+    ["depth", "angle", "scale", "trunk", "seed"].forEach((id) => {
       const el = $(id);
       if (el) el.addEventListener("input", () => renderDemo());
     });
+    $("mode")?.addEventListener("change", () => renderDemo());
     $("drawBtn")?.addEventListener("click", () => renderDemo());
     $("randomBtn")?.addEventListener("click", () => randomizeDemo());
     $("copyCodeBtn")?.addEventListener("click", async () => {
@@ -1283,6 +1367,13 @@ choice = screen.textinput(<span class="code-str">"Main Menu"</span>,
       } catch {
         // fallback: do nothing (clipboard can be blocked on some browsers)
       }
+    });
+
+    // Demo shortcuts (only when not typing in a field)
+    document.addEventListener("keydown", (e) => {
+      if (activeElementIsTypingField()) return;
+      if (e.key === "r" || e.key === "R") randomizeDemo();
+      if (e.key === "d" || e.key === "D") renderDemo();
     });
 
     // Draw once on load
