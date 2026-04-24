@@ -7,7 +7,7 @@ def draw_random_tree(depth, branch_length, branch_angle, shrink_factor):
     This makes the tree look more natural!
     """
     if depth > 0:
-        # A little unevenness makes it look alive.
+        # A little unevenness makes it look realistic``.
         current_shrink = shrink_factor * random.uniform(0.8, 1.2)
         current_length = branch_length * current_shrink
         

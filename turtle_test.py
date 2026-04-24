@@ -1,7 +1,7 @@
 import turtle
 
-# Tiny sanity-check program:
-# if Turtle opens and draws a shape, your environment is working.
+# Test Turtle:
+# if Turtle opens and draws a shape, the environment is working.
 screen = turtle.Screen()
 screen.bgcolor("white")
 
