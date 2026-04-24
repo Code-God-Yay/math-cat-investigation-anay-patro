@@ -19,6 +19,8 @@
   --cream: #f8f5ed;
   --cream2: #f0ebe0;
   --warm: #e8e2d4;
+  --surface: #ffffff;
+  --surface2: #fbfaf6;
   --bark: #7a4a28;
   --bark2: #5a3418;
   --amber: #c8871a;
@@ -40,6 +42,8 @@ html[data-theme="dark"] {
   --cream: #0d130c;
   --cream2: #121a10;
   --warm: #1a2417;
+  --surface: #111a10;
+  --surface2: #0f170e;
   --txt: #f3f3eb;
   --txt2: rgba(243,243,235,0.80);
   --txt3: rgba(243,243,235,0.62);
@@ -357,7 +361,7 @@ body {
 
 /* ── CARDS ───────────────────────────────────────── */
 .card {
-  background: white;
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 12px;
   padding: 20px 22px;
@@ -466,7 +470,7 @@ body {
 
 /* ── PLAYGROUND ──────────────────────────────────── */
 .playground {
-  background: white;
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
@@ -659,7 +663,7 @@ body {
 
 /* ── TREE PLAYGROUND ─────────────────────────────── */
 .tree-pg {
-  background: white;
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
@@ -798,7 +802,7 @@ canvas#treeMain {
   gap: 14px;
 }
 .conc-card {
-  background: white;
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 12px;
   padding: 22px;
@@ -892,7 +896,7 @@ canvas#treeMain {
   margin-bottom: 16px;
 }
 .level-cell {
-  background: white;
+  background: var(--surface);
   border: 0.5px solid var(--border);
   border-radius: 8px;
   padding: 12px 8px;
@@ -988,7 +992,7 @@ code {
         <div class="hero-pill"><div class="hero-pill-dot" style="background:#78c44a"></div>Turtle Graphics</div>
         <div class="hero-pill"><div class="hero-pill-dot" style="background:#88c0ff"></div>Git</div>
         <div class="hero-pill"><div class="hero-pill-dot" style="background:#f5a830"></div>Fractals</div>
-        <div class="hero-pill"><div class="hero-pill-dot" style="background:#f5a830"></div>11 Tasks Completed</div>
+        <div class="hero-pill"><div class="hero-pill-dot" style="background:#f5a830"></div>8 Tasks (4–11) Completed</div>
       </div>
       <div class="hero-scroll-hint">
         <span>Navigate</span>
@@ -1686,7 +1690,7 @@ choice = screen.textinput(<span class="cs2">"Main Menu"</span>,
     </div>
     <div class="cs-body" style="flex-direction:column; gap:24px;">
       <div class="stat-row">
-        <div class="stat-card"><span class="stat-num">11</span><div class="stat-label">Tasks completed</div></div>
+        <div class="stat-card"><span class="stat-num">8</span><div class="stat-label">Tasks completed</div></div>
         <div class="stat-card"><span class="stat-num">v1.2</span><div class="stat-label">Stable release</div></div>
         <div class="stat-card"><span class="stat-num">∞</span><div class="stat-label">Unique trees</div></div>
       </div>
@@ -1857,6 +1861,11 @@ if (window.matchMedia) {
    UTILITY
 ══════════════════════════════════════════════ */
 function $(id) { return document.getElementById(id); }
+
+function cssVar(name, fallback) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
 
 function clearOutput(outId, statId) {
   $(outId).innerHTML = '<div class="pg-empty">Click Run to execute</div>';
@@ -2073,7 +2082,7 @@ function drawFractalTree(canvas, opts) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#f8f5ed';
+  ctx.fillStyle = cssVar('--cream', '#f8f5ed');
   ctx.fillRect(0, 0, W, H);
 
   const { depth, angle, scale, trunk, mode, noise, seed } = opts;
