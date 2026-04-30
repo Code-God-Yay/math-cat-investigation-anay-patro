@@ -5,3 +5,4 @@ __pycache__/
 .history_log
 .build_log
 fib_*.txt
+settings.json
