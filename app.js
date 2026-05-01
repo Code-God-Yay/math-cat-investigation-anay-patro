@@ -504,5 +504,4 @@ window.addEventListener('DOMContentLoaded', () => {
   loadWasm();
   updateTree();
 });
-
-// v1.4 stable
+// V 1.4 stable
