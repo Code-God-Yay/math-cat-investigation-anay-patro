@@ -68,8 +68,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# v1.3 stable
-
-# v1.3 stable
-
-# v1.3 stable
+# v1.4 stable

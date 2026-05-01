@@ -166,3 +166,4 @@ if __name__ == "__main__":
     root.geometry("1150x750")
     app = TreeApp(root)
     root.mainloop()
+    # v1.4 stable

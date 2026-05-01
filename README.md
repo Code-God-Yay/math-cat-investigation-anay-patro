@@ -2,7 +2,7 @@
 
 By **Anay Patro**
 
-**Stable release: v1.3**
+**Stable release: v1.4**
 
 ## Presentation website
 - **Live version**: [View the slides on GitHub Pages](https://code-god-yay.github.io/math-cat-investigation-anay-patro/)
