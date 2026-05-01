@@ -1,156 +1,109 @@
 import random
 import turtle
 
+def get_color(depth, max_depth, heading):
+    # Progress from 0.0 (trunk) to 1.0 (leaves)
+    t = 1 - (depth / max_depth)
+    
+    if depth > 3:
+        # TRUNK: Deep brown to lighter wood
+        r = 35 + (90 * t)
+        g = 20 + (45 * t)
+        b = 10 + (25 * t)
+    else:
+        # LEAVES: Glow based on light from top-right (45 degrees)
+        angle_diff = abs((heading % 360) - 45)
+        if angle_diff > 180: angle_diff = 360 - angle_diff
+        
+        # Light intensity multiplier
+        light = max(0.3, (180 - angle_diff) / 180)
+        
+        # Vibrant green to lime gradient
+        r = 15 + (210 * light * t)
+        g = 55 + (190 * light * t)
+        b = 15 + (45 * light * t)
+            
+    # Force strict integers to prevent macOS Tkinter float crashes
+    return int(max(0, min(255, r))), int(max(0, min(255, g))), int(max(0, min(255, b)))
 
-def draw_realistic_tree(depth: int, length: float, angle: float, scale: float) -> None:
-    """Draw a more “real” fractal tree.
+def draw_tree(depth, length, angle, scale, max_depth):
+    # 1. Always calculate and set the exact integer color first
+    r, g, b = get_color(depth, max_depth, drawing_pen.heading())
+    drawing_pen.color(r, g, b) # This sets BOTH pen color and fill color safely
 
-    I wanted this to feel less like perfect geometry and more like something
-    you’d actually see outside. The small randomness is intentional: it stops
-    the tree from looking copy-pasted at every branch.
-    """
+    # 2. Base Case: Draw Leaves
     if depth <= 0:
+        drawing_pen.begin_fill()
+        # Draw small circles around the current point
+        for _ in range(4):
+            drawing_pen.circle(random.randint(2, 5))
+            drawing_pen.right(90)
+        drawing_pen.end_fill()
         return
 
-    # Thickness is a cheat that makes the picture read better: big trunk, tiny twigs.
-    drawing_pen.pensize(max(1, int(depth * 0.8)))
+    # 3. Recursive Case: Draw Branch
+    # Rounded tapering thickness
+    drawing_pen.pensize(max(1, int(depth**1.2 * 0.5)))
+    
+    # Branch randomness
+    dist = length * random.uniform(0.8, 1.1)
+    drawing_pen.forward(dist)
 
-    # A simple colour rule: brown-ish trunk, green-ish tips.
-    drawing_pen.color("forest green" if depth <= 2 else "sienna")
+    # Branching angles
+    left_a = angle + random.uniform(-10, 10)
+    right_a = angle + random.uniform(-10, 10)
 
-    # “Nature noise”: a little variation per branch, not enough to look broken.
-    length_jitter = length * random.uniform(0.85, 1.15)
-    left_angle = angle + random.randint(-12, 12)
-    right_angle = angle + random.randint(-12, 12)
+    # Left path
+    drawing_pen.left(left_a)
+    draw_tree(depth - 1, length * scale, angle, scale, max_depth)
 
-    drawing_pen.forward(length_jitter)
+    # Right path
+    drawing_pen.right(left_a + right_a)
+    draw_tree(depth - 1, length * scale, angle, scale, max_depth)
 
-    drawing_pen.left(left_angle)
-    draw_realistic_tree(depth - 1, length * scale, angle, scale)
-
-    drawing_pen.right(left_angle + right_angle)
-    draw_realistic_tree(depth - 1, length * scale, angle, scale)
-
-    drawing_pen.left(right_angle)
-
-    # “Teleport back” so we don’t draw a return line.
+    # Clean backtrack
+    drawing_pen.left(right_a)
     drawing_pen.penup()
-    drawing_pen.backward(length_jitter)
+    drawing_pen.backward(dist)
     drawing_pen.pendown()
 
-
-def reset_pen() -> None:
-    """Put the pen in a good starting position for a new tree."""
+def reset_scene():
     drawing_pen.clear()
     drawing_pen.penup()
-    drawing_pen.goto(0, -260)
+    drawing_pen.goto(0, -280)
     drawing_pen.setheading(90)
     drawing_pen.pendown()
 
-
-def start_app() -> None:
-    """Interactive tree maker using turtle's built-in popups."""
+def run():
     while True:
-        depth = tree_window.numinput(
-            "My Tree Maker",
-            "Tree depth (levels). 10–12 looks good:",
-            default=10,
-            minval=1,
-            maxval=15,
-        )
-        if depth is None:
-            return
+        d = tree_window.numinput("Tree", "Depth (10 is good):", 10, 1, 14)
+        if d is None: break
+        l = tree_window.numinput("Tree", "Trunk Length:", 90, 20, 200)
+        if l is None: break
+        a = tree_window.numinput("Tree", "Angle:", 25, 5, 60)
+        if a is None: break
+        s = tree_window.numinput("Tree", "Scale:", 0.75, 0.5, 0.9)
+        if s is None: break
 
-        trunk_length = tree_window.numinput(
-            "My Tree Maker",
-            "Trunk length (pixels). Try ~80:",
-            default=80,
-            minval=10,
-            maxval=300,
-        )
-        if trunk_length is None:
-            return
-
-        branch_angle = tree_window.numinput(
-            "My Tree Maker",
-            "Branch angle (degrees). Try ~25:",
-            default=25,
-            minval=1,
-            maxval=90,
-        )
-        if branch_angle is None:
-            return
-
-        scale_factor = tree_window.numinput(
-            "My Tree Maker",
-            "Scale factor per level. Try ~0.8:",
-            default=0.8,
-            minval=0.1,
-            maxval=0.95,
-        )
-        if scale_factor is None:
-            return
-
-        reset_pen()
-        draw_realistic_tree(int(depth), float(trunk_length), float(branch_angle), float(scale_factor))
+        reset_scene()
+        draw_tree(int(d), float(l), float(a), float(s), int(d))
         tree_window.update()
 
-        again = tree_window.textinput("Done!", "Draw another? Type 'y' for yes:")
-        if again is None or again.strip().lower() != "y":
-            return
+        ans = tree_window.textinput("Again?", "Type 'y' to restart:")
+        if ans is None or ans.lower() != 'y': break
 
-
+# Screen Setup
 tree_window = turtle.Screen()
-tree_window.title("My Tree Maker — Anay Patro")
+tree_window.colormode(255)
 tree_window.bgcolor("honeydew")
 tree_window.tracer(0)
 
+# Pen Setup
 drawing_pen = turtle.Turtle()
 drawing_pen.hideturtle()
 drawing_pen.speed(0)
 
-
 if __name__ == "__main__":
-    reset_pen()
-    start_app()
+    reset_scene()
+    run()
     turtle.done()
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  
-
-# v1.3 stable
-
-# v1.3 stable
