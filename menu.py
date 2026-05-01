@@ -33,7 +33,7 @@ def open_project_menu():
         "9: Interactive Menu\n"
         "10: Random Blue Tree\n"
         "11: Realistic Tree\n"
-        "M: Full App (My Tree Maker)\n"
+        "M: Main.py Application\n"
         "0: Exit"
     )
     menu_text_pen.write(menu_options, align="center", font=("Arial", 12, "normal"))
