@@ -73,7 +73,7 @@ tree_window.bgcolor("honeydew")
 tree_window.tracer(0)
 
 drawing_pen = turtle.Turtle()
-drawing_pen.color("blue")
+drawing_pen.color("sienna")
 drawing_pen.hideturtle()
 
 if __name__ == "__main__":
